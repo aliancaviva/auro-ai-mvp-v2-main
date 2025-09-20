@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import logoImage from "@/assets/logo.png";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -105,12 +106,7 @@ export default function Auth() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-emerald rounded-xl flex items-center justify-center">
-                <i className="ri-magic-line text-white w-6 h-6 flex items-center justify-center"></i>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent font-pacifico">
-                AuroAI
-              </span>
+              <img src={logoImage} alt="AuroAI" className="h-10" />
             </Link>
             <h1 className="text-2xl font-bold text-slate-700 mb-2">
               {isLogin ? "Bem-vindo de volta!" : "Crie sua conta"}

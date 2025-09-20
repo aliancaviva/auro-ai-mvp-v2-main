@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import logoImage from "@/assets/logo.png";
+import { GifCarousel } from "@/components/GifCarousel";
 
 export default function LandingPage() {
   const { navigateWithAuth } = useAuthGuard();
@@ -64,10 +65,10 @@ export default function LandingPage() {
 
       <main>
         {/* HERO */}
-        <section className="relative min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50 pt-16 sm:pt-20">
-          <div className="container mx-auto px-3 sm:px-4 py-8 sm:py-16 lg:py-24">
-            <div className="flex flex-col items-center min-h-[80vh] space-y-8 lg:space-y-12">
-              <div className="text-center space-y-6 sm:space-y-8 max-w-4xl">
+        <section className="relative bg-gradient-to-br from-emerald-50 via-white to-emerald-50 pt-16 sm:pt-20">
+          <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20 lg:py-28">
+            <div className="text-center space-y-8 max-w-4xl mx-auto">
+              <div className="space-y-6 sm:space-y-8">
                 <div className="space-y-3 sm:space-y-4">
                   <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
                     <span className="text-emerald-600">Mande a foto.</span><br />Receba pronta.
@@ -111,27 +112,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative max-w-md lg:max-w-lg">
-                <div className="relative bg-white rounded-2xl shadow-2xl p-4 sm:p-6 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                  <div className="aspect-[4/3] bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl overflow-hidden">
-                    <img
-                      alt="WhatsApp Editor Interface"
-                      className="w-full h-full object-cover object-top"
-                      src="https://readdy.ai/api/search-image?query=Modern%20smartphone%20displaying%20WhatsApp%20interface%20with%20photo%20editing%20features%2C%20clean%20white%20background%2C%20professional%20photography%20style%2C%20high%20quality%20mobile%20app%20interface%2C%20emerald%20green%20accent%20colors%2C%20minimalist%20design&width=600&height=450&seq=hero-phone&orientation=landscape"
-                    />
-                  </div>
-                  <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 bg-emerald-500 text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
-                    <i className="ri-magic-line mr-1"></i>IA
-                  </div>
-                </div>
-
-                <div className="absolute -top-4 sm:-top-8 -left-4 sm:-left-8 bg-white rounded-lg shadow-lg p-2 sm:p-3 animate-bounce">
-                  <i className="ri-image-edit-line text-xl sm:text-2xl text-emerald-500"></i>
-                </div>
-
-                <div className="absolute -bottom-2 sm:-bottom-4 -right-2 sm:-right-4 bg-emerald-500 text-white rounded-lg shadow-lg p-2 sm:p-3 animate-pulse">
-                  <i className="ri-check-line text-xl sm:text-2xl"></i>
-                </div>
+              {/* Carrossel de GIFs do processo */}
+              <div className="mt-12 sm:mt-16 -mx-3 sm:-mx-4">
+                <GifCarousel />
               </div>
             </div>
           </div>
@@ -180,14 +163,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="relative max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl md:rounded-2xl p-4 md:p-8 shadow-inner">
-                <img
-                  alt="Processo de Instalação"
-                  className="w-full h-48 md:h-64 object-cover object-top rounded-lg md:rounded-xl"
-                  src="https://readdy.ai/api/search-image?query=WhatsApp%20installation%20process%20flow%20diagram%20showing%20three%20simple%20steps%2C%20modern%20interface%20design%2C%20clean%20white%20background%2C%20emerald%20green%20accents%2C%20professional%20mobile%20app%20mockup%2C%20step-by-step%20visual%20guide&width=800&height=400&seq=install-flow&orientation=landscape"
-                />
-              </div>
+            <div className="relative max-w-4xl mx-auto mt-8 md:mt-12">
+              {/* Espaço removido - carrossel foi movido para a seção hero */}
             </div>
           </div>
         </section>
