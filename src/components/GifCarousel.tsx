@@ -7,13 +7,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import gif1 from "@/assets/gif1.gif";
+import gif2 from "@/assets/gif2.gif";
+import gif3 from "@/assets/gif3.gif";
+import gif4 from "@/assets/gif4.gif";
+import gif5 from "@/assets/gif5.gif";
 
 const gifs = [
-  { id: 1, src: "https://i.imgur.com/9fnkLeM.gif", alt: "Processo de instalação passo 1" },
-  { id: 2, src: "https://i.imgur.com/yR2kdtO.gif", alt: "Processo de instalação passo 2" },
-  { id: 3, src: "https://i.imgur.com/ADlme8f.gif", alt: "Processo de instalação passo 3" },
-  { id: 4, src: "https://i.imgur.com/iR3uTYc.gif", alt: "Processo de instalação passo 4" },
-  { id: 5, src: "https://i.imgur.com/hXk092Q.gif", alt: "Processo de instalação passo 5" },
+  { id: 1, src: gif1, alt: "Processo de instalação passo 1" },
+  { id: 2, src: gif2, alt: "Processo de instalação passo 2" },
+  { id: 3, src: gif3, alt: "Processo de instalação passo 3" },
+  { id: 4, src: gif4, alt: "Processo de instalação passo 4" },
+  { id: 5, src: gif5, alt: "Processo de instalação passo 5" },
 ];
 
 export function GifCarousel() {
