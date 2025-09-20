@@ -50,13 +50,13 @@ export default function LandingPage() {
                 </button>
               </nav>
               
-              <Link 
-                to="/dashboard" 
+              <button
+                onClick={() => navigateWithAuth("/dashboard")}
                 className="whitespace-nowrap cursor-pointer inline-flex items-center justify-center font-medium transition-all duration-200 px-4 py-2 text-sm rounded-lg text-white hover:opacity-90"
                 style={{ backgroundColor: '#24A978' }}
               >
                 Acessar
-              </Link>
+              </button>
             </div>
           </div>
         </div>

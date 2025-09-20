@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface NavItem {
   path: string;
@@ -46,15 +46,24 @@ const navItems: NavItem[] = [
 
 export function DesktopMenu() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    // Scroll to top after navigation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   return (
     <nav className="hidden lg:flex items-center gap-1">
       {navItems.map(item => {
         const isActive = location.pathname === item.path;
         return (
-          <Link
+          <button
             key={item.path}
-            to={item.path}
+            onClick={() => handleNavigation(item.path)}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               isActive 
                 ? 'bg-emerald-500/20 text-emerald-700 backdrop-blur-sm'
@@ -63,7 +72,7 @@ export function DesktopMenu() {
           >
             <i className={`${item.icon} w-4 h-4`}></i>
             <span>{item.label}</span>
-          </Link>
+          </button>
         );
       })}
     </nav>

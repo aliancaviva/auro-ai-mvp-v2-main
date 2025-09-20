@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,6 +42,16 @@ export function Sidebar({
   onClose
 }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose();
+    // Scroll to top after navigation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
   return <div className={`fixed top-0 right-0 h-full w-80 bg-white/10 backdrop-blur-xl border-l border-white/10 shadow-2xl z-50 transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <div className="flex items-center justify-between p-6 border-b border-white/10">
         <h2 className="text-lg font-semibold text-slate-800 drop-shadow-sm">Menu</h2>
@@ -53,10 +63,10 @@ export function Sidebar({
       <nav className="p-4 space-y-2">
         {navItems.map(item => {
         const isActive = location.pathname === item.path;
-        return <Link key={item.path} to={item.path} onClick={onClose} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive ? 'bg-emerald-400/20 backdrop-blur-sm text-emerald-700 border-l-4 border-emerald-500 shadow-sm' : 'text-slate-700 hover:bg-white/10 hover:text-slate-800 hover:backdrop-blur-sm'}`}>
+        return <button key={item.path} onClick={() => handleNavigation(item.path)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive ? 'bg-emerald-400/20 backdrop-blur-sm text-emerald-700 border-l-4 border-emerald-500 shadow-sm' : 'text-slate-700 hover:bg-white/10 hover:text-slate-800 hover:backdrop-blur-sm'}`}>
               <i className={`${item.icon} w-5 h-5 flex items-center justify-center`}></i>
               <span className="font-medium drop-shadow-sm">{item.label}</span>
-            </Link>;
+            </button>;
       })}
       </nav>
       

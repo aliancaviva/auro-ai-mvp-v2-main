@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +16,9 @@ interface PersonalDataSectionProps {
 }
 
 export function PersonalDataSection({ profile, onProfileUpdate }: PersonalDataSectionProps) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [editName, setEditName] = useState(false);
   const [editPassword, setEditPassword] = useState(false);
   const [newName, setNewName] = useState(profile?.full_name || "");
@@ -83,6 +85,25 @@ export function PersonalDataSection({ profile, onProfileUpdate }: PersonalDataSe
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
+      // Redirect to homepage after logout
+      navigate("/");
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer logout. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -154,6 +175,17 @@ export function PersonalDataSection({ profile, onProfileUpdate }: PersonalDataSe
               <span className="text-sm text-slate-600">Padrão</span>
             </div>
           </div>
+        </div>
+        
+        {/* Logout Button */}
+        <div className="mt-6 pt-6 border-t border-slate-200">
+          <button
+            onClick={handleSignOut}
+            className="w-full inline-flex items-center justify-center font-medium transition-all duration-200 bg-red-500 hover:bg-red-600 text-white px-4 py-3 text-sm rounded-lg"
+          >
+            <i className="ri-logout-box-line w-4 h-4 flex items-center justify-center mr-2"></i>
+            Sair da conta
+          </button>
         </div>
       </div>
 
