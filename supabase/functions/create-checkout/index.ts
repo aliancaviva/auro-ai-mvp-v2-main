@@ -118,11 +118,23 @@ serve(async (req) => {
     const productionDomain = "https://auroai.site";
     logStep("Using production domain for checkout URLs", { productionDomain });
     
+    // Extract UTM parameters from request URL
+    const url = new URL(req.url);
+    const utmParams = {
+      utm_source: url.searchParams.get('utm_source') || '',
+      utm_campaign: url.searchParams.get('utm_campaign') || '',
+      utm_medium: url.searchParams.get('utm_medium') || '',
+      utm_content: url.searchParams.get('utm_content') || '',
+      utm_term: url.searchParams.get('utm_term') || ''
+    };
+    logStep("UTM parameters extracted", utmParams);
+    
     logStep("Creating Stripe checkout session", { 
       customerId, 
       customerEmail: customerId ? undefined : user.email,
       priceId,
-      userId: user.id 
+      userId: user.id,
+      utmParams 
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -138,9 +150,15 @@ serve(async (req) => {
       success_url: `${productionDomain}/planos?payment=success`,
       cancel_url: `${productionDomain}/planos?payment=canceled`,
       locale: "pt-BR",
+      expand: ['line_items'],
       metadata: {
         user_id: user.id,
-        price_id: priceId
+        price_id: priceId,
+        utm_source: utmParams.utm_source,
+        utm_campaign: utmParams.utm_campaign,
+        utm_medium: utmParams.utm_medium,
+        utm_content: utmParams.utm_content,
+        utm_term: utmParams.utm_term
       }
     });
 
