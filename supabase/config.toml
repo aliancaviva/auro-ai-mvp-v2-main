@@ -1,1 +1,17 @@
 project_id = "bnxxemtzsfltumxcwtwf"
+
+[auth]
+site_url = ["http://localhost:3000", "https://*.netlify.app"]
+additional_redirect_urls = ["https://*.netlify.app/**"]
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.check-subscription]
+verify_jwt = true
+
+[functions.customer-portal]
+verify_jwt = true
+
+[functions.test-stripe]
+verify_jwt = false

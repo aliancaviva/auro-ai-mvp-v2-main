@@ -1,16 +1,53 @@
 import { Link } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoImage from "@/assets/logo.png";
 import { GifCarousel } from "@/components/GifCarousel";
 import gifExplain from "@/assets/gif_explain.gif";
 
 export default function LandingPage() {
   const { navigateWithAuth } = useAuthGuard();
+  const { user } = useAuth();
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleCheckout = async (priceId: string) => {
+    if (!user) {
+      // Redirecionar para login com priceId para checkout automático após login
+      const authUrl = `/auth?redirectTo=${encodeURIComponent('/planos')}&priceId=${encodeURIComponent(priceId)}`;
+      window.location.href = authUrl;
+      return;
+    }
+
+    try {
+      toast.loading("Redirecionando para o checkout...");
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId }
+      });
+
+      if (error) {
+        console.error('Checkout error:', error);
+        toast.error("Erro ao criar checkout. Tente novamente.");
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success("Redirecionando para o pagamento...");
+      } else {
+        toast.error("Erro: URL do checkout não encontrada");
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error("Erro ao processar checkout. Tente novamente.");
     }
   };
 
@@ -183,7 +220,7 @@ export default function LandingPage() {
             <div className="text-center mb-8 md:mb-16">
               <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">Escolha seu plano</h2>
               <div className="bg-emerald-100 text-emerald-800 px-4 md:px-6 py-2 md:py-3 rounded-full inline-block mb-6 md:mb-8 font-semibold text-sm md:text-base">
-                ⚡ Bônus: Primeiro mês do plano Micro por apenas R$9,97
+                💡 Teste grátis • Sem cartão • 5 edições incluídas
               </div>
             </div>
 
@@ -235,7 +272,7 @@ export default function LandingPage() {
 
                   <div className="mb-4 md:mb-6">
                     <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• 5 fotos editadas para teste</div>
+                    <div className="text-gray-600 text-xs md:text-sm mb-1">• 5 edições para teste</div>
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Remoção de fundo</div>
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Ajustes de iluminação</div>
@@ -260,9 +297,8 @@ export default function LandingPage() {
                     <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">Ideal para: Pessoas físicas</p>
 
                     <div className="mb-3 md:mb-4">
-                      <div className="text-gray-400 line-through text-xs md:text-sm">R$ 29,97</div>
                       <div className="flex items-center justify-center">
-                        <span className="text-2xl md:text-4xl font-bold text-gray-900">R$ 9,97</span>
+                        <span className="text-2xl md:text-4xl font-bold text-gray-900">R$ 29,97</span>
                         <span className="text-gray-600 ml-1 text-sm md:text-base">/mês</span>
                       </div>
                     </div>
@@ -284,18 +320,18 @@ export default function LandingPage() {
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Fotos de produto pontuais</div>
                   </div>
 
-                  <div className="mb-4 md:mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• 25 fotos editadas por mês</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Remoção de fundo</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Ajustes de iluminação</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Redimensionamento</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• E muito mais →</div>
-                  </div>
+          <div className="mb-4 md:mb-6">
+            <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• 25 edições por mês</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Remoção de fundo</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Ajustes de iluminação</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Redimensionamento</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• E muito mais →</div>
+          </div>
 
                   <button
-                    onClick={() => navigateWithAuth("/dashboard")}
+                    onClick={() => handleCheckout('price_1S9bxMIjNxvqY0BEDRJvquBw')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
@@ -340,17 +376,17 @@ export default function LandingPage() {
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Posts regulares e campanhas</div>
                   </div>
 
-                  <div className="mb-4 md:mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• 45 fotos editadas por mês</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Todos os recursos do Micro</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Processamento prioritário</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte prioritário</div>
-                  </div>
+          <div className="mb-4 md:mb-6">
+            <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• 45 edições por mês</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Todos os recursos do Micro</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Processamento prioritário</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte prioritário</div>
+          </div>
 
                   <button
-                    onClick={() => navigateWithAuth("/dashboard")}
+                    onClick={() => handleCheckout('price_1S9cgEIjNxvqY0BEGV9QUUcC')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
@@ -372,7 +408,7 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    <div className="bg-emerald-100 text-emerald-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold mb-3 md:mb-4">Ilimitado (uso justo)</div>
+                    <div className="bg-emerald-100 text-emerald-800 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold mb-3 md:mb-4">Edições ilimitadas</div>
                   </div>
 
                   <div className="mb-4 md:mb-6">
@@ -391,21 +427,21 @@ export default function LandingPage() {
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Operações que precisam de previsibilidade</div>
                   </div>
 
-                  <div className="mb-4 md:mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Edições ilimitadas (uso justo)</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Todos os recursos anteriores</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Processamento super prioritário</div>
-                    <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte dedicado</div>
-                  </div>
+          <div className="mb-4 md:mb-6">
+            <h4 className="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Recursos inclusos:</h4>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Edições ilimitadas por mês</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Edição via WhatsApp</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Todos os recursos anteriores</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Processamento super prioritário</div>
+            <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte dedicado</div>
+          </div>
 
-                  <Link
-                    to="/dashboard"
+                  <button
+                    onClick={() => handleCheckout('price_1S9cgKIjNxvqY0BEFaYhhSwA')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

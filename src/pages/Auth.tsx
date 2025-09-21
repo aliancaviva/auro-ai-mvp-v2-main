@@ -19,28 +19,91 @@ export default function Auth() {
   const { toast } = useToast();
 
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const planIntent = searchParams.get('plan'); // Para detectar se veio de CTA de plano pago
+  const priceId = searchParams.get('priceId'); // Para checkout automático após login
 
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(redirectTo);
+        // Se já logado e tem priceId, iniciar checkout
+        if (priceId) {
+          initiateCheckoutAfterLogin(priceId);
+        } else {
+          navigate(redirectTo);
+        }
       }
     };
     checkUser();
-  }, [navigate, redirectTo]);
+  }, [navigate, redirectTo, priceId]);
+
+  const initiateCheckoutAfterLogin = async (priceId: string) => {
+    try {
+      toast({
+        title: "Iniciando checkout...",
+        description: "Redirecionando para o pagamento.",
+      });
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId }
+      });
+
+      if (error) {
+        console.error('Checkout error:', error);
+        toast({
+          title: "Erro no checkout",
+          description: "Erro ao criar checkout. Redirecionando para planos.",
+          variant: "destructive",
+        });
+        navigate('/planos');
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast({
+          title: "Sucesso!",
+          description: "Redirecionando para o pagamento...",
+        });
+        // Redirecionar para planos após abrir checkout
+        navigate('/planos');
+      } else {
+        toast({
+          title: "Erro",
+          description: "URL do checkout não encontrada. Redirecionando para planos.",
+          variant: "destructive",
+        });
+        navigate('/planos');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao processar checkout. Redirecionando para planos.",
+        variant: "destructive",
+      });
+      navigate('/planos');
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      let finalRedirectTo = redirectTo;
+      
+      // Se veio de um plano pago, redirecionar para os planos após cadastro para processar pagamento
+      if (planIntent && ['micro', 'meso', 'macro'].includes(planIntent)) {
+        finalRedirectTo = `/planos?plan=${planIntent}`;
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}${redirectTo}`,
+          emailRedirectTo: `${window.location.origin}${finalRedirectTo}`,
           data: {
             full_name: fullName,
           }
@@ -87,7 +150,16 @@ export default function Auth() {
           variant: "destructive",
         });
       } else {
-        navigate(redirectTo);
+        // Se veio de um priceId, iniciar checkout automático
+        if (priceId) {
+          initiateCheckoutAfterLogin(priceId);
+        }
+        // Se veio de um plano pago, redirecionar para os planos após login
+        else if (planIntent && ['micro', 'meso', 'macro'].includes(planIntent)) {
+          navigate(`/planos?plan=${planIntent}`);
+        } else {
+          navigate(redirectTo);
+        }
       }
     } catch (error) {
       toast({

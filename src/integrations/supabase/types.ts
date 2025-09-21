@@ -159,7 +159,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      app_plan: "micro" | "meso" | "macro"
+      app_plan: "micro" | "meso" | "macro" | "teste"
       project_status: "pending" | "processing" | "completed" | "failed"
     }
     CompositeTypes: {
@@ -288,7 +288,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_plan: ["micro", "meso", "macro"],
+      app_plan: ["micro", "meso", "macro", "teste"],
       project_status: ["pending", "processing", "completed", "failed"],
     },
   },

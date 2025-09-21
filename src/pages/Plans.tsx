@@ -1,5 +1,10 @@
 import { Layout } from "@/components/Layout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface PlanFeature {
   text: string;
@@ -18,76 +23,78 @@ interface Plan {
   isCurrent?: boolean;
   buttonText: string;
   buttonVariant: "primary" | "secondary" | "current";
+  priceId?: string;
 }
 
 const plans: Plan[] = [
   {
     id: "teste",
-    name: "Teste",
-    description: "Com 5 edições grátis sem compromisso",
+    name: "Plano Teste",
+    description: "Perfeito para testar nossos recursos",
     price: "Gratuito",
     credits: "5 edições",
     features: [
-      { text: "Sem assinar cartão", included: true },
-      { text: "Disponível para qualquer pessoa", included: true },
+      { text: "5 edições para teste", included: true },
+      { text: "Qualidade padrão", included: true },
+      { text: "Suporte por email", included: true },
+      { text: "Sem renovação automática", included: true },
     ],
-    buttonText: "Quero implementar no WhatsApp",
-    buttonVariant: "primary"
+    buttonText: "Plano Atual",
+    buttonVariant: "current",
   },
   {
     id: "micro",
-    name: "Micro",
-    description: "Perfeito para uso pessoal e ocasional",
-    price: "R$ 9,97",
+    name: "Plano Micro",
+    description: "Ideal para uso pessoal",
+    price: "R$ 29,97",
     period: "/mês",
-    credits: "25 edições/mês",
+    credits: "25 edições mensais",
     features: [
-      { text: "25 fotos editadas por mês", included: true },
-      { text: "Edição via WhatsApp", included: true },
-      { text: "Remoção de fundo", included: true },
-      { text: "Ajustes de iluminação", included: true },
-      { text: "Redimensionamento", included: true },
-      { text: "E muito mais +", included: true },
+      { text: "25 edições por mês", included: true },
+      { text: "Qualidade alta", included: true },
+      { text: "Suporte prioritário", included: true },
+      { text: "Renovação automática", included: true },
     ],
     isPopular: true,
-    isCurrent: true,
-    buttonText: "Plano Atual",
-    buttonVariant: "current"
+    buttonText: "Assinar Agora",
+    buttonVariant: "primary",
+    priceId: "price_1S9d5HRGP4n024Fuvq3WeHCv",
   },
   {
     id: "meso",
-    name: "Meso",
-    description: "Ideal para autônomos e criadores regulares",
+    name: "Plano Meso",
+    description: "Para pequenas empresas",
     price: "R$ 49,97",
     period: "/mês",
-    credits: "45 edições/mês",
+    credits: "45 edições mensais",
     features: [
-      { text: "45 fotos editadas por mês", included: true },
-      { text: "Edição via WhatsApp", included: true },
-      { text: "Todos os recursos do Micro", included: true },
-      { text: "Processamento prioritário", included: true },
+      { text: "45 edições por mês", included: true },
+      { text: "Qualidade premium", included: true },
       { text: "Suporte prioritário", included: true },
+      { text: "API personalizada", included: true },
     ],
-    buttonText: "Fazer Upgrade",
-    buttonVariant: "primary"
+    buttonText: "Assinar Agora",
+    buttonVariant: "primary",
+    priceId: "price_1S9d5HRGP4n024FunrJaW2Mr",
   },
   {
     id: "macro",
-    name: "Macro",
-    description: "Para operações de alto volume",
+    name: "Plano Macro",
+    description: "Para empresas com alto volume",
     price: "R$ 79,97",
     period: "/mês",
-    credits: "Ilimitado (uso justo)",
+    credits: "Edições ilimitadas",
     features: [
-      { text: "Edições ilimitadas (uso justo)", included: true },
-      { text: "Edição via WhatsApp", included: true },
-      { text: "Todos os recursos anteriores", included: true },
-      { text: "Processamento super prioritário", included: true },
+      { text: "Edições ilimitadas", included: true },
+      { text: "Qualidade premium", included: true },
       { text: "Suporte dedicado", included: true },
+      { text: "API personalizada", included: true },
+      { text: "Integrações avançadas", included: true },
     ],
-    buttonText: "Fazer Upgrade",
-    buttonVariant: "primary"
-  }
+    buttonText: "Assinar Agora",
+    buttonVariant: "primary",
+    priceId: "price_1S9d5HRGP4n024FurSVi6ys7",
+  },
 ];
 
 const faqs = [
@@ -111,16 +118,177 @@ const faqs = [
 
 export default function Plans() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [searchParams] = useSearchParams();
+  const { user, session, subscription, checkSubscription } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [testing, setTesting] = useState(false);
 
-  const getButtonStyles = (variant: string) => {
-    switch (variant) {
-      case "current":
-        return "bg-slate-400 text-white cursor-not-allowed";
-      case "secondary":
-        return "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200";
-      default:
-        return "bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5";
+  useEffect(() => {
+    const payment = searchParams.get('payment');
+    if (payment === 'success') {
+      toast.success('Pagamento realizado com sucesso! Verificando sua assinatura...');
+      checkSubscription();
+    } else if (payment === 'canceled') {
+      toast.error('Pagamento cancelado');
     }
+  }, [searchParams, checkSubscription]);
+
+  const testStripeConnection = async () => {
+    setTesting(true);
+    try {
+      console.log('Testando conectividade com Stripe...');
+      const { data, error } = await supabase.functions.invoke('test-stripe');
+      
+      if (error) {
+        console.error('Erro no teste do Stripe:', error);
+        toast.error(`Erro no teste: ${error.message || error}`);
+        return;
+      }
+
+      console.log('Resultado do teste Stripe:', data);
+      
+      if (data.success) {
+        toast.success('✅ Conectividade com Stripe OK! Verifique o console para detalhes.');
+        
+        // Verificar se há problemas com os price IDs
+        const failedPrices = data.priceTests?.filter((p: any) => !p.valid);
+        if (failedPrices && failedPrices.length > 0) {
+          console.warn('Price IDs com problemas:', failedPrices);
+          toast.error(`⚠️ Alguns Price IDs têm problemas. Verifique o console.`);
+        }
+      } else {
+        toast.error(`❌ Teste falhou: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Erro inesperado no teste:', error);
+      toast.error('Erro inesperado durante o teste');
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const handleSubscribe = async (plan: Plan) => {
+    if (!user) {
+      toast.error('Você precisa estar logado para assinar um plano');
+      return;
+    }
+
+    if (!session?.access_token) {
+      toast.error('Sessão expirada. Faça login novamente');
+      return;
+    }
+
+    if (!plan.priceId) {
+      toast.error('Plano não disponível para assinatura');
+      return;
+    }
+
+    console.log('Iniciando checkout para plano:', plan.name, 'Price ID:', plan.priceId);
+    setLoading(true);
+    
+    try {
+      console.log('Chamando create-checkout com:', { 
+        priceId: plan.priceId, 
+        userId: user.id,
+        userEmail: user.email 
+      });
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId: plan.priceId },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        }
+      });
+
+      if (error) {
+        console.error('Erro na função create-checkout:', error);
+        throw error;
+      }
+      
+      console.log('Resposta da função create-checkout:', data);
+      
+      if (data?.url) {
+        console.log('Redirecionando para checkout:', data.url);
+        // Abrir checkout em nova aba
+        window.open(data.url, '_blank');
+      } else {
+        console.error('URL de checkout não recebida:', data);
+        throw new Error('URL de checkout não foi retornada pelo servidor');
+      }
+    } catch (error: any) {
+      console.error('Erro completo no checkout:', error);
+      
+      let errorMessage = 'Erro ao processar pagamento';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.details) {
+        errorMessage = error.details;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      // Mensagens específicas baseadas no tipo de erro
+      if (errorMessage.includes('Authentication') || errorMessage.includes('authorization')) {
+        errorMessage = 'Sessão expirada. Faça login novamente.';
+      } else if (errorMessage.includes('Price') && errorMessage.includes('not active')) {
+        errorMessage = 'Este plano não está mais disponível. Tente outro plano.';
+      } else if (errorMessage.includes('Stripe validation failed')) {
+        errorMessage = 'Erro na validação do pagamento. Verifique sua conta Stripe.';
+      } else if (errorMessage.includes('secret key')) {
+        errorMessage = 'Configuração de pagamento incorreta. Contate o suporte.';
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error opening customer portal:', error);
+      toast.error('Erro ao abrir portal do cliente. Tente novamente.');
+    }
+  };
+
+  const getButtonStyles = (variant: "primary" | "secondary" | "current") => {
+    switch (variant) {
+      case "primary":
+        return "bg-emerald-600 text-white hover:bg-emerald-700";
+      case "secondary":
+        return "bg-gray-100 text-gray-900 hover:bg-gray-200";
+      case "current":
+        return "bg-emerald-100 text-emerald-700 cursor-not-allowed";
+      default:
+        return "bg-emerald-600 text-white hover:bg-emerald-700";
+    }
+  };
+
+  const getUpdatedPlans = () => {
+    return plans.map(plan => {
+      const isCurrentPlan = subscription?.current_plan === plan.id;
+      return {
+        ...plan,
+        isCurrent: isCurrentPlan,
+        buttonText: isCurrentPlan ? "Plano Atual" : plan.buttonText,
+        buttonVariant: isCurrentPlan ? "current" as const : plan.buttonVariant,
+      };
+    });
   };
 
   return (
@@ -135,9 +303,22 @@ export default function Plans() {
             Escolha um plano, pare de se preocupar com edição e cancele a qualquer momento.
           </p>
 
+          {/* Botão de Diagnóstico */}
+          <div className="mb-6 text-center sm:text-left">
+            <Button
+              onClick={testStripeConnection}
+              disabled={testing}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              {testing ? '🔄 Testando...' : '🔧 Testar Conectividade Stripe'}
+            </Button>
+          </div>
+
           {/* Planos Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {plans.map((plan) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {getUpdatedPlans().map((plan) => (
               <div
                 key={plan.id}
                 className={`bg-white/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 border-2 shadow-lg relative ${
@@ -164,9 +345,6 @@ export default function Plans() {
                       <span className="text-sm font-normal text-slate-600">{plan.period}</span>
                     )}
                   </div>
-                  {plan.id === "micro" && (
-                    <p className="text-xs text-slate-500 mt-1">1º mês • Depois R$ 29,97</p>
-                  )}
                   <p className="text-sm font-medium text-emerald-600 mt-1">{plan.credits}</p>
                 </div>
 
@@ -181,12 +359,30 @@ export default function Plans() {
                   </ul>
                 </div>
 
-                <button
-                  disabled={plan.buttonVariant === "current"}
-                  className={`w-full py-2.5 px-4 rounded-lg font-medium transition-all duration-200 text-sm ${getButtonStyles(plan.buttonVariant)}`}
-                >
-                  {plan.buttonText}
-                </button>
+                {plan.isCurrent && subscription?.subscribed ? (
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${getButtonStyles(plan.buttonVariant)}`}
+                        disabled={true}
+                      >
+                        {plan.buttonText}
+                      </button>
+                      <button 
+                        onClick={handleManageSubscription}
+                        className="w-full py-2 px-4 rounded-lg font-medium text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                      >
+                        Gerenciar Assinatura
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${getButtonStyles(plan.buttonVariant)} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={plan.buttonVariant === "current" || loading}
+                      onClick={() => plan.priceId && handleSubscribe(plan)}
+                    >
+                      {loading ? 'Processando...' : plan.buttonText}
+                    </button>
+                  )}
               </div>
             ))}
           </div>

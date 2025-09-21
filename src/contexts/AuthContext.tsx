@@ -2,10 +2,18 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+type SubscriptionData = {
+  subscribed: boolean;
+  current_plan?: string;
+  subscription_end?: string;
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  subscription: SubscriptionData | null;
+  checkSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -15,14 +23,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+
+  const checkSubscription = async () => {
+    if (!session) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
+      });
+      
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+      
+      setSubscription(data);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check subscription when user logs in
+        if (session?.user && event === 'SIGNED_IN') {
+          setTimeout(() => {
+            checkSubscription();
+          }, 100);
+        }
       }
     );
 
@@ -31,9 +68,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Check subscription for existing session
+      if (session?.user) {
+        setTimeout(() => {
+          checkSubscription();
+        }, 100);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => authSubscription.unsubscribe();
   }, []);
 
   const signOut = async () => {
@@ -56,6 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     loading,
+    subscription,
+    checkSubscription,
     signOut,
   };
 
