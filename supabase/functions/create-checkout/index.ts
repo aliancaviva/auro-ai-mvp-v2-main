@@ -137,6 +137,7 @@ serve(async (req) => {
       mode: "subscription",
       success_url: `${productionDomain}/planos?payment=success`,
       cancel_url: `${productionDomain}/planos?payment=canceled`,
+      locale: "pt-BR",
       metadata: {
         user_id: user.id,
         price_id: priceId
