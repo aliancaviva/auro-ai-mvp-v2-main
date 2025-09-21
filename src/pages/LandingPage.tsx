@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import logoImage from "@/assets/logo.png";
 import { GifCarousel } from "@/components/GifCarousel";
+import gifExplain from "@/assets/gif_explain.gif";
 
 export default function LandingPage() {
   const { navigateWithAuth } = useAuthGuard();
@@ -164,7 +165,14 @@ export default function LandingPage() {
             </div>
 
             <div className="relative max-w-4xl mx-auto mt-8 md:mt-12">
-              {/* Espaço removido - carrossel foi movido para a seção hero */}
+              <div className="relative overflow-hidden rounded-lg">
+                <img
+                  src={gifExplain}
+                  alt="Como funciona o processo de edição"
+                  className="w-full h-[32rem] md:h-[40rem] lg:h-[42rem] object-contain bg-transparent mx-auto"
+                  loading="lazy"
+                />
+              </div>
             </div>
           </div>
         </section>
