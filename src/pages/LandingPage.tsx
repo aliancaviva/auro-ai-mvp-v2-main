@@ -6,18 +6,21 @@ import { toast } from "sonner";
 import logoImage from "@/assets/logo.png";
 import { GifCarousel } from "@/components/GifCarousel";
 import gifExplain from "@/assets/gif_explain.gif";
-
 export default function LandingPage() {
-  const { navigateWithAuth } = useAuthGuard();
-  const { user } = useAuth();
-  
+  const {
+    navigateWithAuth
+  } = useAuthGuard();
+  const {
+    user
+  } = useAuth();
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
   const handleCheckout = async (priceId: string) => {
     if (!user) {
       // Redirecionar para login com priceId para checkout automático após login
@@ -25,20 +28,21 @@ export default function LandingPage() {
       window.location.href = authUrl;
       return;
     }
-
     try {
       toast.loading("Redirecionando para o checkout...");
-      
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          priceId
+        }
       });
-
       if (error) {
         console.error('Checkout error:', error);
         toast.error("Erro ao criar checkout. Tente novamente.");
         return;
       }
-
       if (data?.url) {
         window.location.href = data.url;
       } else {
@@ -49,9 +53,7 @@ export default function LandingPage() {
       toast.error("Erro ao processar checkout. Tente novamente.");
     }
   };
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Header with app styling but landing functionality */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-lg border-b border-white/10 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,37 +64,23 @@ export default function LandingPage() {
 
             <div className="flex items-center gap-4">
               <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-                <button 
-                  onClick={() => scrollToSection('beneficios')}
-                  className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium"
-                >
+                <button onClick={() => scrollToSection('beneficios')} className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium">
                   Benefícios
                 </button>
-                <button 
-                  onClick={() => scrollToSection('planos')}
-                  className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium"
-                >
+                <button onClick={() => scrollToSection('planos')} className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium">
                   Planos
                 </button>
-                <button 
-                  onClick={() => scrollToSection('depoimentos')}
-                  className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium"
-                >
+                <button onClick={() => scrollToSection('depoimentos')} className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium">
                   Depoimentos
                 </button>
-                <button 
-                  onClick={() => scrollToSection('faq')}
-                  className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium"
-                >
+                <button onClick={() => scrollToSection('faq')} className="text-slate-700 hover:text-emerald-600 transition-colors cursor-pointer text-sm lg:text-base font-medium">
                   FAQ
                 </button>
               </nav>
               
-              <button
-                onClick={() => navigateWithAuth("/dashboard")}
-                className="whitespace-nowrap cursor-pointer inline-flex items-center justify-center font-medium transition-all duration-200 px-4 py-2 text-sm rounded-lg text-white hover:opacity-90"
-                style={{ backgroundColor: '#24A978' }}
-              >
+              <button onClick={() => navigateWithAuth("/dashboard")} className="whitespace-nowrap cursor-pointer inline-flex items-center justify-center font-medium transition-all duration-200 px-4 py-2 text-sm rounded-lg text-white hover:opacity-90" style={{
+              backgroundColor: '#24A978'
+            }}>
                 Acessar
               </button>
             </div>
@@ -116,10 +104,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex justify-center">
-                  <button
-                    onClick={() => scrollToSection('planos')}
-                    className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base lg:text-lg min-w-fit"
-                  >
+                  <button onClick={() => scrollToSection('planos')} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base lg:text-lg min-w-fit">
                     <i className="ri-whatsapp-line mr-2 text-lg sm:text-xl flex-shrink-0"></i>
                     <span className="truncate">Quero implementar no WhatsApp</span>
                   </button>
@@ -161,7 +146,7 @@ export default function LandingPage() {
         <section id="beneficios" className="py-12 md:py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 md:mb-16">
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">Simples e fácil de instalar</h2>
+              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6">Como implementar no WhatsApp?</h2>
               <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto">Em apenas 3 passos você estará editando suas fotos diretamente pelo WhatsApp</p>
             </div>
 
@@ -202,12 +187,7 @@ export default function LandingPage() {
 
             <div className="relative max-w-4xl mx-auto mt-8 md:mt-12">
               <div className="relative overflow-hidden rounded-lg">
-                <img
-                  src={gifExplain}
-                  alt="Como funciona o processo de edição"
-                  className="w-full h-[32rem] md:h-[40rem] lg:h-[42rem] object-contain bg-transparent mx-auto"
-                  loading="lazy"
-                />
+                <img src={gifExplain} alt="Como funciona o processo de edição" className="w-full h-[32rem] md:h-[40rem] lg:h-[42rem] object-contain bg-transparent mx-auto" loading="lazy" />
               </div>
             </div>
           </div>
@@ -279,10 +259,7 @@ export default function LandingPage() {
                     <div className="text-gray-600 text-xs md:text-sm mb-1">• Todos os recursos disponíveis</div>
                   </div>
 
-                  <button
-                    onClick={() => navigateWithAuth("/dashboard")}
-                    className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
-                  >
+                  <button onClick={() => navigateWithAuth("/dashboard")} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base">
                     Quero implementar no WhatsApp
                   </button>
                 </div>
@@ -329,10 +306,7 @@ export default function LandingPage() {
             <div className="text-gray-600 text-xs md:text-sm mb-1">• E muito mais →</div>
           </div>
 
-                  <button
-                    onClick={() => handleCheckout('price_1S9eiNRGP4n024FuzUZw50LJ')}
-                    className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
-                  >
+                  <button onClick={() => handleCheckout('price_1S9eiNRGP4n024FuzUZw50LJ')} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base">
                     Quero implementar no WhatsApp
                   </button>
                 </div>
@@ -384,10 +358,7 @@ export default function LandingPage() {
             <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte prioritário</div>
           </div>
 
-                  <button
-                    onClick={() => handleCheckout('price_1S9eimRGP4n024Fubc7UAOJc')}
-                    className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
-                  >
+                  <button onClick={() => handleCheckout('price_1S9eimRGP4n024Fubc7UAOJc')} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base">
                     Quero implementar no WhatsApp
                   </button>
                 </div>
@@ -435,10 +406,7 @@ export default function LandingPage() {
             <div className="text-gray-600 text-xs md:text-sm mb-1">• Suporte dedicado</div>
           </div>
 
-                  <button
-                    onClick={() => handleCheckout('price_1S9eisRGP4n024Fu9eiHMXbz')}
-                    className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
-                  >
+                  <button onClick={() => handleCheckout('price_1S9eisRGP4n024Fu9eiHMXbz')} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base">
                     Quero implementar no WhatsApp
                   </button>
                 </div>
@@ -752,10 +720,7 @@ export default function LandingPage() {
               <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 text-white max-w-2xl mx-auto">
                 <h3 className="text-2xl font-bold mb-4">Se identificou?</h3>
                 <p className="text-emerald-100 mb-6">Junte-se a mais de 1.200 pessoas que já transformaram suas fotos</p>
-        <button
-          onClick={() => navigateWithAuth("/dashboard")}
-          className="bg-white text-emerald-600 font-semibold px-4 py-3 sm:px-8 sm:py-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap text-sm sm:text-base inline-flex items-center"
-        >
+        <button onClick={() => navigateWithAuth("/dashboard")} className="bg-white text-emerald-600 font-semibold px-4 py-3 sm:px-8 sm:py-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap text-sm sm:text-base inline-flex items-center">
           <i className="ri-whatsapp-line mr-2"></i>Começar Agora Gratuitamente
         </button>
               </div>
@@ -841,10 +806,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">Ainda tem dúvidas?</h3>
                 <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">Nossa equipe está pronta para ajudar você</p>
-        <button
-          onClick={() => navigateWithAuth("/dashboard")}
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 md:px-6 py-2 md:py-3 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-sm md:text-base inline-flex items-center"
-        >
+        <button onClick={() => navigateWithAuth("/dashboard")} className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 md:px-6 py-2 md:py-3 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-sm md:text-base inline-flex items-center">
           <i className="ri-whatsapp-line mr-2"></i>Falar com Suporte
         </button>
               </div>
@@ -891,35 +853,17 @@ export default function LandingPage() {
                   <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nome Completo *</label>
-                      <input 
-                        id="name" 
-                        required 
-                        className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm" 
-                        placeholder="Seu nome completo" 
-                        type="text" 
-                        name="name"
-                      />
+                      <input id="name" required className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm" placeholder="Seu nome completo" type="text" name="name" />
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">E-mail *</label>
-                      <input 
-                        id="email" 
-                        required 
-                        className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm" 
-                        placeholder="seu@email.com" 
-                        type="email" 
-                        name="email"
-                      />
+                      <input id="email" required className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm" placeholder="seu@email.com" type="email" name="email" />
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="plan" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Plano de Interesse</label>
-                    <select 
-                      id="plan" 
-                      name="plan" 
-                      className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm pr-8"
-                    >
+                    <select id="plan" name="plan" className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm pr-8">
                       <option value="gratuito">Gratuito (5 edições)</option>
                       <option value="micro">Micro - R$ 9,97/mês</option>
                       <option value="meso">Meso - R$ 49,97/mês</option>
@@ -927,11 +871,7 @@ export default function LandingPage() {
                     </select>
                   </div>
 
-          <button
-            type="submit"
-            onClick={() => navigateWithAuth("/dashboard")}
-            className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base lg:text-lg w-full"
-          >
+          <button type="submit" onClick={() => navigateWithAuth("/dashboard")} className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base lg:text-lg w-full">
             <i className="ri-whatsapp-line mr-2 text-base sm:text-lg flex-shrink-0"></i>
             <span className="truncate">Quero implementar no WhatsApp</span>
           </button>
@@ -979,34 +919,22 @@ export default function LandingPage() {
               <h4 className="font-semibold mb-4">Links Rápidos</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <button 
-                    onClick={() => scrollToSection('beneficios')}
-                    className="hover:text-emerald-400 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => scrollToSection('beneficios')} className="hover:text-emerald-400 transition-colors cursor-pointer">
                     Benefícios
                   </button>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => scrollToSection('planos')}
-                    className="hover:text-emerald-400 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => scrollToSection('planos')} className="hover:text-emerald-400 transition-colors cursor-pointer">
                     Planos e Preços
                   </button>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => scrollToSection('depoimentos')}
-                    className="hover:text-emerald-400 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => scrollToSection('depoimentos')} className="hover:text-emerald-400 transition-colors cursor-pointer">
                     Depoimentos
                   </button>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => scrollToSection('faq')}
-                    className="hover:text-emerald-400 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => scrollToSection('faq')} className="hover:text-emerald-400 transition-colors cursor-pointer">
                     FAQ
                   </button>
                 </li>
@@ -1046,6 +974,5 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 }
