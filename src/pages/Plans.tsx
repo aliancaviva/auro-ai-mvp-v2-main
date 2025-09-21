@@ -58,7 +58,7 @@ const plans: Plan[] = [
     isPopular: true,
     buttonText: "Assinar Agora",
     buttonVariant: "primary",
-    priceId: "price_1S9d5HRGP4n024Fuvq3WeHCv",
+    priceId: "price_1S9eiNRGP4n024FuzUZw50LJ",
   },
   {
     id: "meso",
@@ -75,7 +75,7 @@ const plans: Plan[] = [
     ],
     buttonText: "Assinar Agora",
     buttonVariant: "primary",
-    priceId: "price_1S9d5HRGP4n024FunrJaW2Mr",
+    priceId: "price_1S9eimRGP4n024Fubc7UAOJc",
   },
   {
     id: "macro",
@@ -93,7 +93,7 @@ const plans: Plan[] = [
     ],
     buttonText: "Assinar Agora",
     buttonVariant: "primary",
-    priceId: "price_1S9d5HRGP4n024FurSVi6ys7",
+    priceId: "price_1S9eisRGP4n024Fu9eiHMXbz",
   },
 ];
 
@@ -209,8 +209,7 @@ export default function Plans() {
       
       if (data?.url) {
         console.log('Redirecionando para checkout:', data.url);
-        // Abrir checkout em nova aba
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
       } else {
         console.error('URL de checkout não recebida:', data);
         throw new Error('URL de checkout não foi retornada pelo servidor');

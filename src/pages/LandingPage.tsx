@@ -40,8 +40,7 @@ export default function LandingPage() {
       }
 
       if (data?.url) {
-        window.open(data.url, '_blank');
-        toast.success("Redirecionando para o pagamento...");
+        window.location.href = data.url;
       } else {
         toast.error("Erro: URL do checkout não encontrada");
       }
@@ -331,7 +330,7 @@ export default function LandingPage() {
           </div>
 
                   <button
-                    onClick={() => handleCheckout('price_1S9bxMIjNxvqY0BEDRJvquBw')}
+                    onClick={() => handleCheckout('price_1S9eiNRGP4n024FuzUZw50LJ')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
@@ -386,7 +385,7 @@ export default function LandingPage() {
           </div>
 
                   <button
-                    onClick={() => handleCheckout('price_1S9cgEIjNxvqY0BEGV9QUUcC')}
+                    onClick={() => handleCheckout('price_1S9eimRGP4n024Fubc7UAOJc')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
@@ -437,7 +436,7 @@ export default function LandingPage() {
           </div>
 
                   <button
-                    onClick={() => handleCheckout('price_1S9cgKIjNxvqY0BEFaYhhSwA')}
+                    onClick={() => handleCheckout('price_1S9eisRGP4n024Fu9eiHMXbz')}
                     className="font-semibold rounded-lg transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl px-4 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm lg:text-base w-full text-sm md:text-base"
                   >
                     Quero implementar no WhatsApp
