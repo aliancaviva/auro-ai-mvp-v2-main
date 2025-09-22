@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -67,7 +67,7 @@ const plans: Plan[] = [{
   isPopular: true,
   buttonText: "Assinar Agora",
   buttonVariant: "primary",
-  priceId: "price_1S9eiNRGP4n024FuzUZw50LJ"
+  priceId: "price_1S9d5HRGP4n024Fuvq3WeHCv"
 }, {
   id: "meso",
   name: "Plano Meso",
@@ -90,7 +90,7 @@ const plans: Plan[] = [{
   }],
   buttonText: "Assinar Agora",
   buttonVariant: "primary",
-  priceId: "price_1S9eimRGP4n024Fubc7UAOJc"
+  priceId: "price_1S9d5HRGP4n024FunrJaW2Mr"
 }, {
   id: "macro",
   name: "Plano Macro",
@@ -116,7 +116,7 @@ const plans: Plan[] = [{
   }],
   buttonText: "Assinar Agora",
   buttonVariant: "primary",
-  priceId: "price_1S9eisRGP4n024Fu9eiHMXbz"
+  priceId: "price_1S9d5HRGP4n024FurSVi6ys7"
 }];
 const faqs = [{
   question: "Como funciona o uso justo no plano Macro?",
@@ -133,7 +133,7 @@ const faqs = [{
 }];
 export default function Plans() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     user,
     session,
@@ -142,15 +142,28 @@ export default function Plans() {
   } = useAuth();
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
+  const hasHandledPaymentRef = useRef(false);
   useEffect(() => {
     const payment = searchParams.get('payment');
+    if (!payment || hasHandledPaymentRef.current) return;
+
+    hasHandledPaymentRef.current = true;
+
     if (payment === 'success') {
       toast.success('Pagamento realizado com sucesso! Verificando sua assinatura...');
+      // Dispara verificação e limpa o parâmetro para evitar toasts duplicados
       checkSubscription();
+      const next = new URLSearchParams(searchParams);
+      next.delete('payment');
+      setSearchParams(next, { replace: true });
     } else if (payment === 'canceled') {
       toast.error('Pagamento cancelado');
+      const next = new URLSearchParams(searchParams);
+      next.delete('payment');
+      setSearchParams(next, { replace: true });
     }
-  }, [searchParams, checkSubscription]);
+  // Intencionalmente não adicionamos checkSubscription para evitar reexecuções
+  }, [searchParams, setSearchParams]);
   const testStripeConnection = async () => {
     setTesting(true);
     try {

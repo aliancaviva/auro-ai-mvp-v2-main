@@ -16,7 +16,8 @@ const logStep = (step: string, details?: any) => {
 const PRICE_TO_PLAN: { [key: string]: string } = {
   "price_1S9d5HRGP4n024Fuvq3WeHCv": "micro",
   "price_1S9d5HRGP4n024FunrJaW2Mr": "meso", 
-  "price_1S9d5HRGP4n024FurSVi6ys7": "macro"
+  "price_1S9d5HRGP4n024FurSVi6ys7": "macro",
+  "price_1S9eiNRGP4n024FuzUZw50LJ": "teste" // ID de teste encontrado nos logs
 };
 
 serve(async (req) => {
@@ -88,8 +89,26 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
+      logStep("Raw subscription data", { 
+        subscriptionId: subscription.id, 
+        current_period_end: subscription.current_period_end,
+        typeof_end: typeof subscription.current_period_end
+      });
+      
+      // Validate and parse the timestamp
+      let subscriptionEndTimestamp = subscription.current_period_end;
+      if (typeof subscriptionEndTimestamp !== 'number' || subscriptionEndTimestamp <= 0) {
+        logStep("Invalid timestamp, using fallback", { current_period_end: subscriptionEndTimestamp });
+        // Fallback to 1 month from now
+        subscriptionEndTimestamp = Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60);
+      }
+      
+      subscriptionEnd = new Date(subscriptionEndTimestamp * 1000).toISOString();
+      logStep("Active subscription found", { 
+        subscriptionId: subscription.id, 
+        endDate: subscriptionEnd, 
+        rawTimestamp: subscriptionEndTimestamp 
+      });
       
       // Determinar plano baseado no price_id
       const priceId = subscription.items.data[0].price.id;

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,26 +25,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
 
-  const checkSubscription = async () => {
+  const checkSubscription = useCallback(async () => {
     if (!session) return;
-    
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         }
       });
-      
       if (error) {
         console.error('Error checking subscription:', error);
         return;
       }
-      
       setSubscription(data);
     } catch (error) {
       console.error('Error checking subscription:', error);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     // Set up auth state listener FIRST
