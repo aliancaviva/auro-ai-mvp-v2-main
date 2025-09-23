@@ -50,13 +50,8 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   const getPlanDisplayName = (plan?: string) => {
-    switch (plan) {
-      case 'micro': return 'Micro';
-      case 'basic': return 'Básico';
-      case 'premium': return 'Premium';
-      case 'macro': return 'Macro';
-      default: return 'Micro';
-    }
+    // Just return the plan as stored in database since it's already the display name
+    return plan || 'Plano Teste';
   };
 
   const getRemainingCredits = () => {
@@ -86,10 +81,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           
           {!isLandingPage && (
             <div className="absolute right-4 flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 text-slate-700 drop-shadow-sm">
+              <div className="flex items-center gap-2 text-slate-700 drop-shadow-sm">
                 <i className="ri-vip-crown-line w-4 h-4 flex items-center justify-center"></i>
                 <span className="text-sm font-medium">{getPlanDisplayName(userData?.current_plan)}</span>
-                <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full border border-white/10">
+                <span className="hidden md:inline-block text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full border border-white/10">
                   {getRemainingCredits()} créditos
                 </span>
               </div>

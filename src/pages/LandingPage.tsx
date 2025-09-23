@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,76 @@ import { toast } from "sonner";
 import logoImage from "@/assets/logo.png";
 import { GifCarousel } from "@/components/GifCarousel";
 import gifExplain from "@/assets/gif_explain.gif";
+
+interface AccordionItemProps {
+  question: string;
+  answer: string;
+  icon: string;
+  isOpen?: boolean;
+}
+
+function AccordionItem({ question, answer, icon, isOpen = false }: AccordionItemProps) {
+  const [open, setOpen] = useState(isOpen);
+
+  return (
+    <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
+      <button 
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer"
+      >
+        <div className="flex items-start space-x-3 md:space-x-6 flex-1">
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
+              <i className={`${icon} text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300`}></i>
+            </div>
+          </div>
+          <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"{question}"</h3>
+        </div>
+        <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+          <i className={`${open ? 'ri-subtract-line' : 'ri-add-line'} text-lg md:text-xl text-emerald-600 transition-transform duration-200`}></i>
+        </div>
+      </button>
+      {open && (
+        <div className="px-4 md:px-8 pb-4 md:pb-6">
+          <div className="pt-3 md:pt-4 border-t border-gray-100 ml-12 md:ml-16">
+            <p className="text-gray-700 leading-relaxed text-sm md:text-base">{answer}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface FaqAccordionItemProps {
+  question: string;
+  answer: string;
+  isOpen?: boolean;
+}
+
+function FaqAccordionItem({ question, answer, isOpen = false }: FaqAccordionItemProps) {
+  const [open, setOpen] = useState(isOpen);
+
+  return (
+    <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
+      <button 
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer"
+      >
+        <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">{question}</h3>
+        <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+          <i className={`${open ? 'ri-subtract-line' : 'ri-add-line'} text-lg md:text-xl text-emerald-600 transition-transform duration-200`}></i>
+        </div>
+      </button>
+      {open && (
+        <div className="px-4 md:px-8 pb-4 md:pb-6">
+          <div className="pt-3 md:pt-4 border-t border-gray-100">
+            <p className="text-gray-700 leading-relaxed text-sm md:text-base">{answer}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 export default function LandingPage() {
   const {
     navigateWithAuth
@@ -424,85 +495,36 @@ export default function LandingPage() {
             </div>
 
             <div className="max-w-4xl mx-auto space-y-4 md:space-y-8 mb-8 md:mb-16">
-              <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer">
-                  <div className="flex items-start space-x-3 md:space-x-6 flex-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
-                        <i className="ri-message-2-line text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300"></i>
-                      </div>
-                    </div>
-                    <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"Deve ser complicado"</h3>
-                  </div>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i>
-                  </div>
-                </button>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer">
-                  <div className="flex items-start space-x-3 md:space-x-6 flex-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
-                        <i className="ri-user-heart-line text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300"></i>
-                      </div>
-                    </div>
-                    <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"Funciona para mim?"</h3>
-                  </div>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i>
-                  </div>
-                </button>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer">
-                  <div className="flex items-start space-x-3 md:space-x-6 flex-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
-                        <i className="ri-shield-check-line text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300"></i>
-                      </div>
-                    </div>
-                    <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"É confiável?"</h3>
-                  </div>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i>
-                  </div>
-                </button>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer">
-                  <div className="flex items-start space-x-3 md:space-x-6 flex-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
-                        <i className="ri-gift-line text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300"></i>
-                      </div>
-                    </div>
-                    <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"E se não gostar?"</h3>
-                  </div>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i>
-                  </div>
-                </button>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl md:rounded-2xl overflow-hidden hover:bg-emerald-50 transition-colors duration-300 group">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 group-hover:bg-emerald-50 transition-colors cursor-pointer">
-                  <div className="flex items-start space-x-3 md:space-x-6 flex-1">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 group-hover:bg-emerald-500 rounded-full flex items-center justify-center transition-colors duration-300">
-                        <i className="ri-chat-voice-line text-lg md:text-xl text-emerald-600 group-hover:text-white transition-colors duration-300"></i>
-                      </div>
-                    </div>
-                    <h3 className="text-base md:text-xl font-semibold text-gray-900 flex-1 pr-2">"Não sou bom de tecnologia"</h3>
-                  </div>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                    <i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i>
-                  </div>
-                </button>
-              </div>
+              <AccordionItem 
+                question="Deve ser complicado"
+                answer="Nada complicado. Você só envia a foto no WhatsApp e diz o que quer em linguagem simples. A gente devolve pronto."
+                icon="ri-message-2-line"
+                isOpen={true}
+              />
+              
+              <AccordionItem 
+                question="Funciona para mim?"
+                answer="Sim, com certeza. Serve para qualquer pessoa que queira melhorar uma foto — seja pra currículo, redes, documentos ou lembrança pessoal."
+                icon="ri-user-heart-line"
+              />
+              
+              <AccordionItem 
+                question="É confiável?"
+                answer="Sim. As fotos são entregues no WhatsApp, o sistema é seguro, e você controla o que fica salvo ou não. Já fizemos milhares de edições."
+                icon="ri-shield-check-line"
+              />
+              
+              <AccordionItem 
+                question="E se não gostar?"
+                answer="Sem problema. Você pode pedir ajustes ou até cancelar sua assinatura a qualquer momento, sem multa e sem burocracia."
+                icon="ri-gift-line"
+              />
+              
+              <AccordionItem 
+                question="Não sou bom de tecnologia"
+                answer="Não precisa ser. Se você sabe mandar uma foto no WhatsApp, você já sabe usar. Nada de aplicativos, senhas ou editores complicados."
+                icon="ri-chat-voice-line"
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto">
@@ -737,66 +759,46 @@ export default function LandingPage() {
             </div>
 
             <div className="max-w-3xl mx-auto mb-8 md:mb-16">
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Como funciona o uso justo no plano Macro?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-subtract-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-                <div className="px-4 md:px-8 pb-4 md:pb-6">
-                  <div className="pt-3 md:pt-4 border-t border-gray-100">
-                    <p className="text-gray-700 leading-relaxed text-sm md:text-base">O uso justo significa que você pode editar quantas fotos precisar para suas operações normais. Evitamos apenas uso abusivo ou revenda do serviço. Para uso comercial regular, não há limites.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Minhas fotos ficam armazenadas no sistema?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Funciona para qualquer tipo de foto?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Como cancelar se não gostar?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Preciso instalar algum aplicativo?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Quanto tempo demora para receber a foto editada?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Posso fazer pedidos específicos de edição?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg mb-3 md:mb-4 overflow-hidden">
-                <button className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer">
-                  <h3 className="text-sm md:text-lg font-semibold text-gray-900 pr-4 flex-1">Tem garantia de qualidade?</h3>
-                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center"><i className="ri-add-line text-lg md:text-xl text-emerald-600 transition-transform duration-200"></i></div>
-                </button>
-              </div>
+              <FaqAccordionItem 
+                question="Como funciona o uso justo no plano Macro?"
+                answer="O uso justo significa que você pode editar quantas fotos precisar para suas operações normais. Evitamos apenas uso abusivo ou revenda do serviço. Para uso comercial regular, não há limites."
+                isOpen={true}
+              />
+              
+              <FaqAccordionItem 
+                question="Minhas fotos ficam armazenadas no sistema?"
+                answer="Hoje as edições são entregues direto no WhatsApp. Em breve, você terá acesso à Biblioteca, para organizar e visualizar suas fotos no painel web."
+              />
+              
+              <FaqAccordionItem 
+                question="Funciona para qualquer tipo de foto?"
+                answer="Sim! Funciona para fotos de rosto, corpo, documentos, redes sociais, fotos de produtos e muito mais. É só pedir como quiser."
+              />
+              
+              <FaqAccordionItem 
+                question="Como cancelar se não gostar?"
+                answer="Você pode cancelar a qualquer momento direto pelo painel, sem multa, sem fidelidade. Simples e rápido."
+              />
+              
+              <FaqAccordionItem 
+                question="Preciso instalar algum aplicativo?"
+                answer="Não. Tudo acontece no WhatsApp que você já usa. Sem instalar nada, sem criar conta em app novo."
+              />
+              
+              <FaqAccordionItem 
+                question="Quanto tempo demora para receber a foto editada?"
+                answer="Geralmente você recebe sua edição em até alguns minutos. Em horários de pico, pode levar um pouco mais, mas sempre com agilidade."
+              />
+              
+              <FaqAccordionItem 
+                question="Posso fazer pedidos específicos de edição?"
+                answer="Sim! Você descreve do seu jeito: 'fundo branco', 'melhorar nitidez', 'efeito mais claro' — a edição é feita exatamente como pedir."
+              />
+              
+              <FaqAccordionItem 
+                question="Tem garantia de qualidade?"
+                answer="Sim. Cada edição passa por um padrão que garante nitidez, cor, corte e resultado final apresentável."
+              />
             </div>
 
             <div className="text-center">
@@ -897,7 +899,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="md:col-span-2">
-              <h3 className="text-2xl font-bold mb-4 font-pacifico">AuroAI</h3>
+              <img src={logoImage} alt="AuroAI" className="h-8 mb-4" />
               <p className="text-gray-400 mb-6 leading-relaxed">
                 Seu editor pessoal inteligente no WhatsApp. Transforme suas fotos em segundos, 
                 sem complicação, direto do seu celular.

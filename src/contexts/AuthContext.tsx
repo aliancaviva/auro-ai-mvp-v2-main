@@ -82,15 +82,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Always clear local state first
+      setSession(null);
+      setUser(null);
+      setSubscription(null);
+      
+      // If there's no session, we're already logged out
+      if (!session) {
+        return;
+      }
+      
       const { error } = await supabase.auth.signOut();
-      if (error) {
+      
+      // Ignore session_not_found errors as user is already logged out
+      if (error && !error.message?.includes('session_not_found') && !error.message?.includes('Session not found')) {
         console.error('Error signing out:', error);
         throw error;
       }
-      // Clear local state immediately
-      setSession(null);
-      setUser(null);
-    } catch (error) {
+    } catch (error: any) {
+      // Don't throw error for session not found - user is already logged out
+      if (error.message?.includes('session_not_found') || error.message?.includes('Session not found')) {
+        console.log('Session already invalid, logout completed locally');
+        return;
+      }
       console.error('Sign out error:', error);
       throw error;
     }

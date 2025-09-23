@@ -16,8 +16,8 @@ export default function Dashboard() {
     whatsapp_connected?: boolean;
   } | null>(null);
   const [stats, setStats] = useState({
-    totalEditions: 247,
-    thisMonth: 28
+    totalEditions: 0,
+    remainingThisMonth: 0
   });
   useEffect(() => {
     if (user) {
@@ -36,6 +36,12 @@ export default function Dashboard() {
         return;
       }
       setProfile(data);
+      
+      // Update stats based on profile data
+      setStats({
+        totalEditions: data?.credits_used || 0,
+        remainingThisMonth: Math.max(0, (data?.max_credits || 0) - (data?.credits_used || 0))
+      });
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
     }
@@ -105,7 +111,7 @@ export default function Dashboard() {
             
             <div className="flex justify-between items-center py-2">
               <span className="text-slate-600">Este mês</span>
-              <span className="font-bold text-emerald-600 text-lg">{stats.thisMonth}</span>
+              <span className="font-bold text-emerald-600 text-lg">{stats.remainingThisMonth}</span>
             </div>
           </div>
         </div>
